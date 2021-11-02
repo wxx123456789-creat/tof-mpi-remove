@@ -1,7 +1,7 @@
 import tensorflow as tf
 from activation import *
 from conv import conv
-def dfus_block(x, flg, regular, i):
+def dfus_block(x, flg, regular, i): 
     pref = 'dfus_block_' + str(i) + '_'
 
     # define initializer for the network
@@ -78,9 +78,9 @@ def dfus_block(x, flg, regular, i):
 
     tensor_output = tf.concat([ae_inputs, conv_output], axis=-1)
     ae_outputs = tf.identity(tensor_output, name='ae_' + pref + '_outputs')
-    return ae_outputs
+    return ae_outputs  
 
-def dfus_block_add_output_conv(x, flg, regular, i):
+def dfus_block_add_output_conv(x, flg, regular, i): #定义了一个残差融合模块，，每个尺度的深度残差图首先被扩张到原始分辨率，concat融合后经1x1卷积，得到最终的残差融合输出Rout
     pref = 'dfus_block_add_output_conv_' + str(i) + '_'
 
     # define initializer for the network
