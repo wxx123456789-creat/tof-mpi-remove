@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-def conv(previous_pref=None, x=None, output_channel=None, filter_size=None, dilation_rate=None, trainable=None, activation=None, conv_num=None):
+def conv(previous_pref=None, x=None, output_channel=None, filter_size=None, dilation_rate=None, trainable=None, activation=None, conv_num=None): 
 
     pref = previous_pref  + "conv_" + str(conv_num)
 
@@ -12,13 +12,13 @@ def conv(previous_pref=None, x=None, output_channel=None, filter_size=None, dila
     if init_net != None:
         for name in init_net.get_variable_names():
             # select certain variables
-            flag_init = False
+            flag_init = False 
             for key in keys:
                 if key in name:
                     flag_init = True
             for key in keys_avoid:
                 if key in name:
-                    flag_init = False
+                    flag_init = False #flag_init = False是训练模式，True是测试模式
             if flag_init:
                 name_f = name.replace('/', '_')
                 num = str(init_net.get_variable_value(name).tolist())
@@ -43,7 +43,7 @@ def conv(previous_pref=None, x=None, output_channel=None, filter_size=None, dila
     if name + '_kernel' in inits:
         kernel_init = eval(name + '_kernel()')
     else:
-        kernel_init = None
+        kernel_init = None           #初始化权重参数
     # convolution
 
     current_output = tf.layers.conv2d(
@@ -58,9 +58,9 @@ def conv(previous_pref=None, x=None, output_channel=None, filter_size=None, dila
         bias_initializer=bias_init,
         name=name,
     )
-    return current_output
+    return current_output #定义了一个卷积函数
 
-def transpose_conv(pref=None, inits=None, current_input=None, output_channel=None, filter_size=None, strides=None,trainable=None, activation=None, conv_num=None):
+def transpose_conv(pref=None, inits=None, current_input=None, output_channel=None, filter_size=None, strides=None,trainable=None, activation=None, conv_num=None): #定义反卷积
 
     name = pref + "transpose_conv_" + str(conv_num)
 
@@ -88,4 +88,4 @@ def transpose_conv(pref=None, inits=None, current_input=None, output_channel=Non
         bias_initializer=bias_init,
         name=name,
     )
-    return current_output
+    return current_output #定义了一个反卷积函数
