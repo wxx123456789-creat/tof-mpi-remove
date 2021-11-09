@@ -46,7 +46,7 @@ def tof_net_func(features, labels, mode, params):
     loss_mask_dict = {}
     # depth_residual_scale = [0, 0, 0, 0, 0, 1.0]
 
-    if params['training_set'] == 'FLAT_reflection_s5' or params['training_set'] == 'FLAT_full_s5':
+    if params['training_set'] == 'FLAT_reflection_s5' or params['training_set'] == 'FLAT_full_s5': #从真实数据中提取深度、幅值的处理过程，kinect_pipeline用于FLAT_reflection_s5
         if params['output_flg'] == True:
             gt = None
             ideal = None
@@ -62,7 +62,7 @@ def tof_net_func(features, labels, mode, params):
         depth_kinect, depth_kinect_msk, amplitude_kinect = kinect_pipeline(full)
         depth_kinect = tf.expand_dims(depth_kinect, -1)
         depth_kinect_msk = tf.expand_dims(depth_kinect_msk, axis=-1)
-    elif params['training_set'] == 'deeptof_reflection':
+    elif params['training_set'] == 'deeptof_reflection': #合成的DeepToF数据集无需处理，要用到gt=labels['depth_ref']，full = features['depth']，amps = features['amps']
         if params['output_flg'] == True:
             gt = None
         else:
@@ -165,9 +165,9 @@ def tof_net_func(features, labels, mode, params):
         depth_outs, depth_msk,  amplitude_outs= kinect_pipeline(raw_new)
         depth_outs = tf.expand_dims(depth_outs, -1)
         depth_msk = tf.expand_dims(depth_msk, axis=-1)
-    else:
+    else: #合成数据时的选择input
         if model_name_list[0] == 'deformable':
-            if params['training_set'] == 'tof_FT3':
+            if params['training_set'] == 'tof_FT3': 
                 inputs = tf.concat([depth_kinect, amplitude_kinect, rgb_kinect], axis=-1)
             else:
                 inputs = depth_kinect
@@ -182,9 +182,9 @@ def tof_net_func(features, labels, mode, params):
             elif params['training_set'] == 'FLAT_full_s5' or params['training_set'] == 'FLAT_reflection_s5':
                 rgb_kinect = tf.concat([tf.ones_like(depth_kinect, dtype=tf.float32), tf.ones_like(depth_kinect, dtype=tf.float32), tf.ones_like(depth_kinect, dtype=tf.float32)],axis=-1)
                 inputs = tf.concat([depth_kinect, amplitude_kinect, rgb_kinect], axis=-1)
-            elif params['training_set'] == 'deeptof_reflection':
+            elif params['training_set'] == 'deeptof_reflection':#deeptof是灰度图
                 rgb_kinect = tf.concat([tf.ones_like(depth_kinect, dtype=tf.float32), tf.ones_like(depth_kinect, dtype=tf.float32),tf.ones_like(depth_kinect, dtype=tf.float32)], axis=-1)
-                inputs = tf.concat([depth_kinect, amplitude_kinect, rgb_kinect], axis=-1)
+                inputs = tf.concat([depth_kinect, amplitude_kinect, rgb_kinect], axis=-1) #输入input时的concat操作
             elif params['training_set'] == 'FLAT':
                 rgb_kinect = tf.concat([tf.ones_like(depth_kinect, dtype=tf.float32), tf.ones_like(depth_kinect, dtype=tf.float32),tf.ones_like(depth_kinect, dtype=tf.float32)], axis=-1)
                 inputs = tf.concat([depth_kinect, amplitude_kinect, rgb_kinect], axis=-1)
@@ -192,7 +192,7 @@ def tof_net_func(features, labels, mode, params):
                 inputs = depth_kinect
 
 
-            if model_name_list[0] == 'sample' or model_name_list[0] == 'pyramid':
+            if model_name_list[0] == 'sample' or model_name_list[0] == 'pyramid': #RRB模块
                 depth_outs, depth_residual_every_scale = get_network(name=params['model_name'], x=inputs, flg=mode == tf.estimator.ModeKeys.TRAIN,
                                          regular=0.1, batch_size=params['batch_size'], range=params['deformable_range'])
             else:
